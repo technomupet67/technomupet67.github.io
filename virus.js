@@ -1,5 +1,7 @@
 // class of viruses using a flock system
-// 
+// heavily influenced by Daniel Shiffman and his coding train youtube videos
+// as well as book the Nature of Code
+
 class Virus {
     constructor(x, y) {
         this.acceleration = createVector(0, 0);
@@ -44,10 +46,10 @@ class Virus {
         this.velocity.limit(this.maxspeed);
         this.position.add(this.velocity);
         this.acceleration.mult(0);
-        if (this.how_long_sick > 50) {
-            this.how_long_sick = 0;
-            this.health = "Healthy";
-        }
+        // if (this.how_long_sick > max_sick) {
+        //     this.how_long_sick = 0;
+        //     this.health = "Healthy";
+        // }
 
     }
 
@@ -76,7 +78,7 @@ class Virus {
             stroke(200, 0, 0);
             ellipse(this.position.x, this.position.y, virus_size, virus_size);
             this.how_long_sick += 1;
-            if (this.how_long_sick > 50) {
+            if (this.how_long_sick > max_sick) {
                 this.health = "Immune";
                 this.how_long_sick = 0;
             }
@@ -94,7 +96,7 @@ class Virus {
             stroke(0, 255, 0);
             ellipse(this.position.x, this.position.y, virus_size, virus_size);
             this.how_long_immune += 1;
-            if (this.how_long_immune > 200) {
+            if (this.how_long_immune > max_immune) {
                 this.health = "Healthy";
                 this.how_long_immune = 0;
             }
