@@ -3,8 +3,8 @@
 
 
 let viruses = [];
-let population = 500; // number of people in the simulation
-let virus_size = 8; // size of the individual people in the simulation
+let population = 250; // number of people in the simulation
+let virus_size = 16; // size of the individual people in the simulation
 
 let canvas_x = 800;
 let canvas_y = 600;
@@ -17,7 +17,7 @@ function setup() {
 
     // create population
     for (let i = 0; i < population; i++) {
-        viruses[i] = new Virus(random(width), random(height));
+        viruses[i] = new Virus(random(2* virus_size, width- 2*virus_size), random(2* virus_size, height-2*virus_size));
     }
 
 }

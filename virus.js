@@ -7,7 +7,7 @@ class Virus {
         this.acceleration = createVector(0, 0);
         this.velocity = p5.Vector.random2D();
         this.position = createVector(x, y);
-        this.r = 5.0;
+        this.r = virus_size; // for where to bounce off the sides
         this.maxspeed = 5;
         this.maxforce = 0.05;
         this.health = "Healthy"; // options could be healthy, sick, dying, immune
@@ -107,10 +107,10 @@ class Virus {
 
     // bounce against the walls
     borders() {
-        if (this.position.x < -this.r) this.velocity.mult(-1);
-        if (this.position.y < -this.r) this.velocity.mult(-1);
-        if (this.position.x > width + this.r) this.velocity.mult(-1);
-        if (this.position.y > height + this.r) this.velocity.mult(-1);
+        if (this.position.x < this.r) this.velocity.mult(-1);
+        if (this.position.y < this.r) this.velocity.mult(-1);
+        if (this.position.x > width - this.r) this.velocity.mult(-1);
+        if (this.position.y > height - this.r) this.velocity.mult(-1);
     }
 
     separate(viruses) {
@@ -133,10 +133,12 @@ class Virus {
 
         if (count > 10) {
             this.health = "Sick";
+            // this.velocity = this.velocity.div(1.0);
         }
 
         if (count > 15) {
             this.health = "Dying";
+            this.velocity = this.velocity.div(0.8);
         }
 
 
