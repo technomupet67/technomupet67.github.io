@@ -1,5 +1,14 @@
 html,
 body {
-    margin: 0;
-    padding: 0;
+    margin: 20;
+    padding: 20;
+
+}
+
+input {
+    font-size: 32pt;
+}
+
+canvas {
+    display: block;
 }

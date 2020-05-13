@@ -13,6 +13,7 @@ class Virus {
         this.health = "Healthy"; // options could be healthy, sick, dying, immune
         this.how_long_sick = 0;
         this.how_long_immune = 0;
+
     }
 
     run(viruses) {
@@ -30,6 +31,8 @@ class Virus {
         let sep = this.separate(viruses);
         let ali = this.align(viruses);
         let coh = this.cohesion(viruses);
+        let grav = this.gravity(viruses);
+        let bla = this.black_hole(viruses);
 
         sep.mult(2.0);
         ali.mult(1.0);
@@ -38,18 +41,16 @@ class Virus {
         this.applyForce(sep);
         this.applyForce(ali);
         this.applyForce(coh);
-    }
+        this.applyForce(grav);
+        this.applyForce(bla);
 
+    }
 
     update() {
         this.velocity.add(this.acceleration);
         this.velocity.limit(this.maxspeed);
         this.position.add(this.velocity);
         this.acceleration.mult(0);
-        // if (this.how_long_sick > max_sick) {
-        //     this.how_long_sick = 0;
-        //     this.health = "Healthy";
-        // }
 
     }
 
@@ -72,11 +73,15 @@ class Virus {
             fill(200, 0, 250, 20);
             stroke(200, 0, 250);
             ellipse(this.position.x, this.position.y, virus_size, virus_size);
+            // stroke(255,255,255);
+            //ellipse(this.position.x, this.position.y, virus_size * this.velocity.x, virus_size* this.velocity.y );
         }
         if (this.health === "Sick") {
             fill(200, 0, 0, 20);
             stroke(200, 0, 0);
             ellipse(this.position.x, this.position.y, virus_size, virus_size);
+            // stroke(255,255,255);
+            //ellipse(this.position.x, this.position.y, virus_size * this.velocity.x,  virus_size * this.velocity.y);
             this.how_long_sick += 1;
             if (this.how_long_sick > max_sick) {
                 this.health = "Immune";
@@ -92,9 +97,10 @@ class Virus {
         }
 
         if (this.health === "Immune") {
-            fill(0, 125, 0, 125);
-            stroke(0, 255, 0);
+            fill(0, 0, 125, 125);
+            stroke(0, 0, 255);
             ellipse(this.position.x, this.position.y, virus_size, virus_size);
+            // ellipse(this.position.x, this.position.y, virus_size * this.velocity.x, virus_size * this.velocity.y);
             this.how_long_immune += 1;
             if (this.how_long_immune > max_immune) {
                 this.health = "Healthy";
@@ -117,7 +123,7 @@ class Virus {
         let desiredseparation = 35.0;
         let steer = createVector(0, 0);
         let count = 0;
-        // For every boid in the system, check if it's too close
+        // For every person in the system, check if it's too close
         for (let i = 0; i < viruses.length; i++) {
             let d = p5.Vector.dist(this.position, viruses[i].position);
             // If people are close 
@@ -133,12 +139,12 @@ class Virus {
 
         if (count > 10) {
             this.health = "Sick";
-            // this.velocity = this.velocity.div(1.0);
+
         }
 
         if (count > 15) {
             this.health = "Dying";
-            this.velocity = this.velocity.div(0.8);
+            this.velocity = this.velocity.mult(1.2); //if dying give explosion effect by giving speed
         }
 
 
@@ -198,4 +204,24 @@ class Virus {
             return createVector(0, 0);
         }
     }
+
+    gravity() {
+        // 0,0 to remove gravity impact
+        // values of 0.01 is ok on 
+        let g = createVector(0.0, 0.0);
+        let x = mouseX;
+        let y = mouseY;
+        return g;
+    }
+
+    black_hole() {
+        // here to create an attractor
+        let b = createVector(0.0, 0.0);
+        let x = mouseX;
+        let y = mouseY;
+
+        return b;
+
+    }
+
 }
