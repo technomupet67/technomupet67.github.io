@@ -69,17 +69,18 @@ class Virus {
 
     // draw the virus
     render() {
+        this.r = int(10-(10 * this.velocity.mag()));
         if (this.health === "Healthy") {
             fill(200, 0, 250, 20);
             stroke(200, 0, 250);
-            ellipse(this.position.x, this.position.y, virus_size, virus_size);
+            ellipse(this.position.x, this.position.y, this.r, this.r);
             // stroke(255,255,255);
             //ellipse(this.position.x, this.position.y, virus_size * this.velocity.x, virus_size* this.velocity.y );
         }
         if (this.health === "Sick") {
             fill(200, 0, 0, 20);
             stroke(200, 0, 0);
-            ellipse(this.position.x, this.position.y, virus_size, virus_size);
+            ellipse(this.position.x, this.position.y, this.r, this.r);
             // stroke(255,255,255);
             //ellipse(this.position.x, this.position.y, virus_size * this.velocity.x,  virus_size * this.velocity.y);
             this.how_long_sick += 1;
@@ -93,13 +94,13 @@ class Virus {
         if (this.health === "Dying") {
             fill(255, 0, 0, 125);
             stroke(255, 0, 0);
-            ellipse(this.position.x, this.position.y, virus_size, virus_size);
+            ellipse(this.position.x, this.position.y, this.r, this.r);
         }
 
         if (this.health === "Immune") {
             fill(0, 0, 125, 125);
             stroke(0, 0, 255);
-            ellipse(this.position.x, this.position.y, virus_size, virus_size);
+            ellipse(this.position.x, this.position.y, this.r, this.r);
             // ellipse(this.position.x, this.position.y, virus_size * this.velocity.x, virus_size * this.velocity.y);
             this.how_long_immune += 1;
             if (this.how_long_immune > max_immune) {
@@ -144,7 +145,7 @@ class Virus {
 
         if (count > 15) {
             this.health = "Dying";
-            this.velocity = this.velocity.mult(1.2); //if dying give explosion effect by giving speed
+            this.velocity = this.velocity.mult(1.25); //if dying give explosion effect by giving speed
         }
 
 

@@ -28,8 +28,10 @@ function mouseDragged() {
 }
 
 function try_button() {
+    let x = random(2 * virus_size, width - 2 * virus_size)
+    let y = random(2 * virus_size, height - 2 * virus_size)
     for (let i = 0; i < 10; i++) {
-        viruses.push(new Virus(random(2 * virus_size, width - 2 * virus_size), random(2 * virus_size, height - 2 * virus_size)));
+        viruses.push(new Virus(x,y));
     }
 }
 
@@ -37,7 +39,11 @@ function draw() {
 
     // this will clear the screen so there is no trace of previous population on each cycle
     background(0, 0, 0, 100)
-
+    
+    fill(255, 255, 255);
+    stroke(255,255,255);
+    textSize(14);
+    text('Num. people = '+str(viruses.length), 10, height-10);
     // go through all the population an run the various updates
     // most of the code is in the class Virus
     for (let i = 0; i < viruses.length; i++) {
