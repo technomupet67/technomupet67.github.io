@@ -1,211 +1,97 @@
-let flock;
+// A weekend project of generative art thingy
+// heavily influenced by Daniel Shiffman and his Nature of Code book
+// tryinng to reproduce a wave on this occasion
+
+
+let waves = [];
+let population = 16; // number of people in the simulation
+let wave_size = 10; // size of the individual parts in the simulation
+
+let canvas_x = 16 * 10;
+let canvas_y = 16 * 10;
+
+let max_foam = 300;
+
+let cohesion_dist = 50;
+let incr = 0;
+
+let debug_text = false;
 
 function setup() {
-    createCanvas(128, 512);
-    createP("Drag the mouse to generate new boids.");
+    createCanvas(canvas_x, canvas_y);
+    // gives a bit of a fuzzy look
+    frameRate(40);
 
-    flock = new Flock();
-    // Add an initial set of boids into the system
-    for (let i = 0; i < 20; i++) {
-        let b = new Boid(random(0,width), random(0,height));
-        flock.addBoid(b);
+    // create population
+    for (let i = 0; i < population; i++) {
+
+        let x = random(2 * wave_size, width - 2 * wave_size);
+        let y = random(2 * wave_size, height - 2 * wave_size);
+        let adj = map(y, 0, height, 0, 255);
+        let c = color(50, adj, 255, 150);
+
+        waves[i] = new Particule(x, y, c);
     }
+
 }
 
-
-function draw() {
-    background(51);
-    flock.run();
-}
-
-// Add a new boid into the System
+// add to the population when you drag mouse
 function mouseDragged() {
-    flock.addBoid(new Boid(mouseX, mouseY));
+    let x = mouseX;
+    let y = mouseY;
+    let adj = map(y, 0, height, 0, 255);
+    let c = color(50, adj, 255, 100);
+    waves.push(new Particule(x, y, c));
 }
 
-function Flock() {
-    // An array for all the boids
-    this.boids = []; // Initialize the array
+function keyPressed(SPACE) {
+    debug_text = !debug_text;
 }
 
-Flock.prototype.run = function () {
-    for (let i = 0; i < this.boids.length; i++) {
-        this.boids[i].run(this.boids); // Passing the entire list of boids to each boid individually
+// a button on the index page to add 10 items
+function try_button() {
+    let x = random(2 * wave_size, width - 2 * wave_size)
+    let y = random(2 * wave_size, height - 2 * wave_size)
+    let adj = map(y, 0, height, 0, 255);
+    let c = color(50, adj, 255, 100);
+    for (let i = 0; i < 10; i++) {
+        waves.push(new Particule(x, y, c));
     }
 }
 
-Flock.prototype.addBoid = function (b) {
-    this.boids.push(b);
-}
+// a button on the index page to kill 10 items
+function kill_button() {
+    for (let i = 10; i > 0; i--) {
+        waves.splice(i, 1);
 
-// The Nature of Code
-// Daniel Shiffman
-// http://natureofcode.com
-
-// Boid class
-// Methods for Separation, Cohesion, Alignment added
-
-function Boid(x, y) {
-    this.acceleration = createVector(0, 0);
-    this.velocity = createVector(random(-1, 1), random(-1, 1));
-    this.position = createVector(x, y);
-    this.r = 3.0;
-    this.maxspeed = 2; // Maximum speed
-    this.maxforce = 0.05; // Maximum steering force
-}
-
-Boid.prototype.run = function (boids) {
-    this.flock(boids);
-    this.update();
-    this.borders();
-    this.render();
-}
-
-Boid.prototype.applyForce = function (force) {
-    // We could add mass here if we want A = F / M
-    this.acceleration.add(force);
-}
-
-// We accumulate a new acceleration each time based on three rules
-Boid.prototype.flock = function (boids) {
-    let sep = this.separate(boids); // Separation
-    let ali = this.align(boids); // Alignment
-    let coh = this.cohesion(boids); // Cohesion
-    // Arbitrarily weight these forces
-    sep.mult(1.0);
-    ali.mult(1.2);
-    coh.mult(1.0);
-    // Add the force vectors to acceleration
-    this.applyForce(sep);
-    this.applyForce(ali);
-    this.applyForce(coh);
-}
-
-// Method to update location
-Boid.prototype.update = function () {
-    // Update velocity
-    this.velocity.add(this.acceleration);
-    // Limit speed
-    this.velocity.limit(this.maxspeed);
-    this.position.add(this.velocity);
-    // Reset accelertion to 0 each cycle
-    this.acceleration.mult(0);
-}
-
-// A method that calculates and applies a steering force towards a target
-// STEER = DESIRED MINUS VELOCITY
-Boid.prototype.seek = function (target) {
-    let desired = p5.Vector.sub(target, this.position); // A vector pointing from the location to the target
-    // Normalize desired and scale to maximum speed
-    desired.normalize();
-    desired.mult(this.maxspeed);
-    // Steering = Desired minus Velocity
-    let steer = p5.Vector.sub(desired, this.velocity);
-    steer.limit(this.maxforce); // Limit to maximum steering force
-    return steer;
-}
-
-Boid.prototype.render = function () {
-    // Draw a triangle rotated in the direction of velocity
-    let theta = this.velocity.heading() + radians(90);
-    fill(127, 0, 255);
-    stroke(127,0,255);
-    push();
-    translate(this.position.x, this.position.y);
-    rotate(theta);
-    beginShape();
-    vertex(0, -this.r * 2);
-    vertex(-this.r, this.r * 2);
-    vertex(this.r, this.r * 2);
-    endShape(CLOSE);
-    pop();
-}
-
-// Wraparound
-Boid.prototype.borders = function () {
-    if (this.position.x < -this.r) this.position.x = width + this.r;
-    if (this.position.y < -this.r) this.position.y = height + this.r;
-    if (this.position.x > width + this.r) this.position.x = -this.r;
-    if (this.position.y > height + this.r) this.position.y = -this.r;
-}
-
-// Separation
-// Method checks for nearby boids and steers away
-Boid.prototype.separate = function (boids) {
-    let desiredseparation = 25.0;
-    let steer = createVector(0, 0);
-    let count = 0;
-    // For every boid in the system, check if it's too close
-    for (let i = 0; i < boids.length; i++) {
-        let d = p5.Vector.dist(this.position, boids[i].position);
-        // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself)
-        if ((d > 0) && (d < desiredseparation)) {
-            // Calculate vector pointing away from neighbor
-            let diff = p5.Vector.sub(this.position, boids[i].position);
-            diff.normalize();
-            diff.div(d); // Weight by distance
-            steer.add(diff);
-            count++; // Keep track of how many
-        }
-    }
-    // Average -- divide by how many
-    if (count > 0) {
-        steer.div(count);
-    }
-
-    // As long as the vector is greater than 0
-    if (steer.mag() > 0) {
-        // Implement Reynolds: Steering = Desired - Velocity
-        steer.normalize();
-        steer.mult(this.maxspeed);
-        steer.sub(this.velocity);
-        steer.limit(this.maxforce);
-    }
-    return steer;
-}
-
-// Alignment
-// For every nearby boid in the system, calculate the average velocity
-Boid.prototype.align = function (boids) {
-    let neighbordist = 50;
-    let sum = createVector(0, 0);
-    let count = 0;
-    for (let i = 0; i < boids.length; i++) {
-        let d = p5.Vector.dist(this.position, boids[i].position);
-        if ((d > 0) && (d < neighbordist)) {
-            sum.add(boids[i].velocity);
-            count++;
-        }
-    }
-    if (count > 0) {
-        sum.div(count);
-        sum.normalize();
-        sum.mult(this.maxspeed);
-        let steer = p5.Vector.sub(sum, this.velocity);
-        steer.limit(this.maxforce);
-        return steer;
-    } else {
-        return createVector(0, 0);
     }
 }
 
-// Cohesion
-// For the average location (i.e. center) of all nearby boids, calculate steering vector towards that location
-Boid.prototype.cohesion = function (boids) {
-    let neighbordist = 50;
-    let sum = createVector(0, 0); // Start with empty vector to accumulate all locations
-    let count = 0;
-    for (let i = 0; i < boids.length; i++) {
-        let d = p5.Vector.dist(this.position, boids[i].position);
-        if ((d > 0) && (d < neighbordist)) {
-            sum.add(boids[i].position); // Add location
-            count++;
-        }
+
+
+
+// this is the main loop of the program
+function draw() {
+
+    // this is to create the trail effect lower alpha to elongate trail
+    fill(0, 7);
+    rect(0, 0, width, height);
+
+
+    // for debug and check where things are hidden
+    // rotate(-PI/10);
+    if (debug_text) {
+        fill(255, 255, 255);
+        stroke(255, 255, 255, 255);
+        textSize(14);
+        text("Wave Program", 10, height - 50);
+        text('Num. particules = ' + str(waves.length), 10, height - 30);
+
+        text("Frame Rate : " + int(frameRate()), 10, height - 10);
     }
-    if (count > 0) {
-        sum.div(count);
-        return this.seek(sum); // Steer towards the location
-    } else {
-        return createVector(0, 0);
+    // go through all the population an run the various updates
+    // most of the code is in the class wave
+    for (let i = 0; i < waves.length; i++) {
+        waves[i].run(waves);
     }
 }
