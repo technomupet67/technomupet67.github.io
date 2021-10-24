@@ -7,8 +7,8 @@ let waves = [];
 let population = 16; // number of people in the simulation
 let wave_size = 10; // size of the individual parts in the simulation
 
-let canvas_x = 16 * 10;
-let canvas_y = 16 * 10;
+let canvas_x = 16 * 40;
+let canvas_y = 16 * 40;
 
 let max_foam = 300;
 
